@@ -1,0 +1,33 @@
+/* src/components/Navbar.css (USING THEME VARIABLES) */
+
+.navbar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background-color: var(--color-background); /* Use the white background */
+    border-top: 1px solid var(--color-border);   /* Use the light grey border */
+
+    /* These lines stick the navbar to the bottom of the screen */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    z-index: 1000;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: var(--color-text-light); /* Use the light grey text for inactive links */
+    font-weight: 500;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: color 0.2s ease-in-out;
+}
+
+/* This style is automatically applied by NavLink when the link is active! */
+.navbar a.active {
+    color: var(--color-primary); /* Use your primary blue for the active link */
+    font-weight: 700;
+}

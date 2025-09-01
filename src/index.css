@@ -1,0 +1,115 @@
+/* src/index.css (LocalConnect Custom Theme) */
+
+/* 1. DEFINE YOUR STARTUP'S COLOR PALETTE AS CSS VARIABLES */
+:root {
+  /* Core Colors */
+  --color-primary: #2563EB;      /* Bright Blue: Main buttons, active links, logos */
+  --color-secondary: #F97316;     /* Orange: Special call-to-actions, highlights */
+  --color-background: #FFFFFF;    /* White: The main app background */
+  --color-text: #111827;           /* Near Black: Main body text, headings */
+  --color-accent: #22C55E;        /* Green: Success messages, confirmation */
+  
+  /* Neutral Shades */
+  --color-text-light: #6B7280;    /* A light grey for secondary text (e.g., categories) */
+  --color-border: #E5E7EB;       /* A very light grey for borders and dividers */
+  --color-card-background: #F9FAFB; /* A very subtle off-white for cards */
+}
+
+
+/* 2. APPLY THE GLOBAL STYLES */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  /* Apply your theme! */
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+main.content {
+  padding: 1rem; /* Add some padding to the main content area */
+  padding-bottom: 80px; /* Space for the navbar */
+}
+
+
+/* 3. STYLE COMMON ELEMENTS USING YOUR VARIABLES */
+
+h1, h2, h3 {
+  color: var(--color-text);
+}
+
+a {
+  color: var(--color-primary); /* Links are blue by default */
+  text-decoration: none;
+  font-weight: 500;
+}
+
+p {
+  line-height: 1.6;
+  color: var(--color-text-light); /* Lighter text for paragraphs */
+}
+
+/* Style for the Business Cards */
+.card {
+  background-color: var(--color-background); /* White cards */
+  border: 1px solid var(--color-border);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  border-radius: 12px; /* A more modern, rounded look */
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  transition: all 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.card-link {
+  text-decoration: none;
+  color: inherit;
+}
+.card h3 { /* Make card titles darker */
+  color: var(--color-text);
+}
+
+/* Style for Forms (Search Bar, Login, Profile Editor) */
+input, textarea {
+  background-color: var(--color-card-background);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  padding: 0.75rem;
+  border-radius: 8px;
+  width: 100%;
+  box-sizing: border-box; /* Ensures padding doesn't affect width */
+  margin-bottom: 1rem;
+}
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+button, .button-primary {
+  background-color: var(--color-primary); /* Primary buttons are blue */
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+button:hover, .button-primary:hover {
+  filter: brightness(1.1);
+}
+
+/* A special style for secondary action buttons */
+.button-secondary {
+  background-color: var(--color-secondary); /* Use your orange color */
+}

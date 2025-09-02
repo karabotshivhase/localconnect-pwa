@@ -1,4 +1,108 @@
-// src/components/BusinessProfileEditor.jsx (FULL FILE - FINAL TABBED LAYOUT)
+// src/components/BusinessProfileEditor.jsx (FINAL ROBUST USER FLOW)
+
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../supabaseClient';
+
+// TabButton component is unchanged
+function TabButton({ children, isActive, onClick }) { /* ... same as before ... */ }
+
+export default function BusinessProfileEditor({ session }) {
+  // All state is unchanged
+  const [activeTab, setActiveTab] = useState('details');
+  // ... other state ...
+
+  // useEffect is unchanged
+  useEffect(() => { /* ... same as before ... */ }, [session]);
+
+  // uploadGalleryImage and deleteImage functions are unchanged
+  async function uploadGalleryImage(event) { /* ... same as before ... */ }
+  async function deleteImage(image) { /* ... same as before ... */ }
+  
+  // --- THIS FUNCTION CONTAINS THE LOGIC FIX ---
+  async function updateProfileDetails(event) {
+    event.preventDefault();
+    setLoading(true);
+    const updates = { user_id: session.user.id, name, category, description, address, phone };
+    
+    // NEW: We add .select().single() to the upsert command.
+    // This tells Supabase to return the full row that was just created or updated.
+    let { data, error } = await supabase
+      .from('businesses')
+      .upsert(updates, { onConflict: 'user_id' })
+      .select()
+      .single();
+
+    if (error) {
+      alert(error.message);
+    } else {
+      // NEW: After a successful save, we get the business ID from the returned data
+      // and immediately set it in our state. This is especially important for new users.
+      if (data) {
+        setBusinessId(data.id);
+      }
+      alert('Profile details saved successfully!');
+    }
+    setLoading(false);
+  }
+
+  // handleDeleteBusiness and getPublicUrl are unchanged
+  async function handleDeleteBusiness() { /* ... same as before ... */ }
+  function getPublicUrl(path) { /* ... same as before ... */ }
+  
+  // --- THIS IS WHERE THE UI FIX IS IMPLEMENTED ---
+  return (
+    <div>
+      <h2>Your Business Profile</h2>
+      <div className="tabs-container" style={{ borderBottom: '1px solid var(--color-border)', marginBottom: '1.5rem' }}>
+        <TabButton isActive={activeTab === 'details'} onClick={() => setActiveTab('details')}>
+          Profile Details
+        </TabButton>
+        
+        {/* NEW: These tabs are now conditionally rendered. They will ONLY appear */}
+        {/* if a businessId exists (meaning the profile has been saved at least once). */}
+        {businessId && (
+          <>
+            <TabButton isActive={activeTab === 'gallery'} onClick={() => setActiveTab('gallery')}>
+              Manage Gallery
+            </TabButton>
+            <TabButton isActive={activeTab === 'settings'} onClick={() => setActiveTab('settings')}>
+              Settings
+            </TabButton>
+          </>
+        )}
+      </div>
+
+      <div className="tab-content">
+        {activeTab === 'details' && (
+          <form onSubmit={updateProfileDetails} className="form-widget">
+            {/* NEW: A helpful message for new users */}
+            {!businessId && (
+              <p style={{ fontWeight: 'bold' }}>Welcome! Please fill out and save your business details to unlock the gallery and settings.</p>
+            )}
+            {/* ... Rest of the form is unchanged ... */}
+          </form>
+        )}
+        
+        {/* The gallery and settings tabs will now only render when they are active AND businessId exists */}
+        {activeTab === 'gallery' && businessId && (
+          <div className="gallery-manager">
+            {/* ... Gallery UI is unchanged ... */}
+          </div>
+        )}
+        {activeTab === 'settings' && businessId && (
+          <div className="danger-zone">
+            {/* ... Danger Zone UI is unchanged ... */}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// For absolute safety, here is the full, complete file again for copy-pasting.
+
+// src/components/BusinessProfileEditor.jsx (FULL FILE - FINAL ROBUST FLOW)
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
@@ -71,8 +175,8 @@ export default function BusinessProfileEditor({ session }) {
   async function updateProfileDetails(event) {
     event.preventDefault(); setLoading(true);
     const updates = { user_id: session.user.id, name, category, description, address, phone };
-    let { error } = await supabase.from('businesses').upsert(updates, { onConflict: 'user_id' });
-    if (error) { alert(error.message); } else { alert('Profile details saved successfully!'); }
+    let { data, error } = await supabase.from('businesses').upsert(updates, { onConflict: 'user_id' }).select().single();
+    if (error) { alert(error.message); } else { if (data) { setBusinessId(data.id); } alert('Profile details saved successfully!'); }
     setLoading(false);
   }
 
@@ -102,13 +206,17 @@ export default function BusinessProfileEditor({ session }) {
       <h2>Your Business Profile</h2>
       <div className="tabs-container" style={{ borderBottom: '1px solid var(--color-border)', marginBottom: '1.5rem' }}>
         <TabButton isActive={activeTab === 'details'} onClick={() => setActiveTab('details')}>Profile Details</TabButton>
-        <TabButton isActive={activeTab === 'gallery'} onClick={() => setActiveTab('gallery')}>Manage Gallery</TabButton>
-        <TabButton isActive={activeTab === 'settings'} onClick={() => setActiveTab('settings')}>Settings</TabButton>
+        {businessId && (
+          <>
+            <TabButton isActive={activeTab === 'gallery'} onClick={() => setActiveTab('gallery')}>Manage Gallery</TabButton>
+            <TabButton isActive={activeTab === 'settings'} onClick={() => setActiveTab('settings')}>Settings</TabButton>
+          </>
+        )}
       </div>
       <div className="tab-content">
         {activeTab === 'details' && (
           <form onSubmit={updateProfileDetails} className="form-widget">
-            <p>Edit your business information below.</p>
+            {!businessId && ( <p style={{ fontWeight: 'bold' }}>Welcome! Please fill out and save your business details to unlock the gallery and settings.</p> )}
             <div><label htmlFor="name">Business Name</label><input id="name" type="text" value={name || ''} onChange={(e) => setName(e.target.value)} required /></div>
             <div><label htmlFor="category">Category</label><input id="category" type="text" value={category || ''} onChange={(e) => setCategory(e.target.value)} /></div>
             <div><label htmlFor="description">Description</label><textarea id="description" value={description || ''} onChange={(e) => setDescription(e.target.value)} /></div>
@@ -117,7 +225,7 @@ export default function BusinessProfileEditor({ session }) {
             <div><button className="button primary block" type="submit" disabled={loading}>{loading ? 'Saving...' : 'Save Details'}</button></div>
           </form>
         )}
-        {activeTab === 'gallery' && (
+        {activeTab === 'gallery' && businessId && (
           <div className="gallery-manager">
             <p>Upload images of your products, services, or location.</p>
             <div>
@@ -134,7 +242,7 @@ export default function BusinessProfileEditor({ session }) {
             </div>
           </div>
         )}
-        {activeTab === 'settings' && (
+        {activeTab === 'settings' && businessId && (
           <div className="danger-zone">
             <h3>Delete Profile</h3>
             <p>Permanently remove your business profile and all associated data from LocalConnect. This action cannot be undone.</p>

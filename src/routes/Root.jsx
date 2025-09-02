@@ -1,18 +1,19 @@
-// src/routes/Root.jsx
+// src/routes/Root.jsx (WITH ANALYTICS)
+
 import { Outlet } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { Analytics } from '@vercel/analytics/react'; // <-- Import the component
 
 export default function Root() {
   return (
     <>
-      {/* The main content for each page will be rendered here */}
       <main className="content">
         <Outlet />
       </main>
       
-      {/* The Navbar will be visible on all pages */}
       <Navbar />
+
+      <Analytics /> {/* <-- Add the component here */}
     </>
   );
 }
-

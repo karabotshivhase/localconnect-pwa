@@ -1,9 +1,7 @@
-// src/components/BusinessProfileEditor.jsx (FINAL CLEANED VERSION)
-import { useState, useEffect } from 'react'; // <-- ONLY ONE IMPORT STATEMENT
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 
-// <-- TABBUTTON IS DEFINED ONLY ONCE AT THE TOP
 function TabButton({ children, isActive, onClick }) {
   return (
     <button onClick={onClick} style={{ padding: '10px 15px', border: 'none', borderBottom: isActive ? '2px solid var(--color-primary)' : '2px solid transparent', background: 'none', color: isActive ? 'var(--color-primary)' : 'var(--color-text-light)', cursor: 'pointer', fontWeight: isActive ? 'bold' : 'normal' }}>{children}</button>
@@ -11,7 +9,7 @@ function TabButton({ children, isActive, onClick }) {
 }
 
 export default function BusinessProfileEditor({ session }) {
-  const [activeTab, setActiveTab] = useState('details');
+  const [activeTab, setActiveTab] = a-useState('details');
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [businessId, setBusinessId] = useState(null);
@@ -29,9 +27,7 @@ export default function BusinessProfileEditor({ session }) {
       try {
         setLoading(true);
         const { user } = session;
-        let { data: businessData, error: businessError } = await supabase
-          .from('businesses').select(`id, name, category, description, address, phone`)
-          .eq('user_id', user.id).single();
+        let { data: businessData, error: businessError } = await supabase.from('businesses').select(`id, name, category, description, address, phone`).eq('user_id', user.id).single();
         if (businessError && businessError.code !== 'PGRST116') throw businessError;
         if (businessData) {
           setBusinessId(businessData.id); setName(businessData.name); setCategory(businessData.category);
@@ -71,9 +67,15 @@ export default function BusinessProfileEditor({ session }) {
   
   async function updateProfileDetails(event) {
     event.preventDefault(); setLoading(true);
+    const wasFirstTimeSave = !businessId;
     const updates = { user_id: session.user.id, name, category, description, address, phone };
     let { data, error } = await supabase.from('businesses').upsert(updates, { onConflict: 'user_id' }).select().single();
-    if (error) { alert(error.message); } else { if (data) { setBusinessId(data.id); } alert('Profile details saved successfully!'); }
+    if (error) { alert(error.message); setLoading(false); return; }
+    if (data) {
+      setBusinessId(data.id);
+      if (wasFirstTimeSave) { alert('Profile details saved! Now you can add images to your gallery.'); setActiveTab('gallery'); } 
+      else { alert('Profile details updated successfully!'); }
+    }
     setLoading(false);
   }
 

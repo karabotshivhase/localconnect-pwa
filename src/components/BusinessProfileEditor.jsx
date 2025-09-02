@@ -1,15 +1,18 @@
+// src/components/BusinessProfileEditor.jsx (FINAL SYNTAX FIX)
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 
 function TabButton({ children, isActive, onClick }) {
   return (
-    <button onClick={onClick} style={{ padding: '10px 15px', border: 'none', borderBottom: isActive ? '2px solid var(--color-primary)' : '2px solid transparent', background: 'none', color: isActive ? 'var(--color-primary)' : 'var(--color-text-light)', cursor: 'pointer', fontWeight: isActive ? 'bold' : 'normal' }}>{children}</button>
+    <button onClick={onClick} style={{ padding: '10px 15px', border: 'none', borderBottom: isActive ? '2px solid var(--color-primary)' : '2px solid transparent', background: 'none', color: isActive ? 'var(--color-primary)' : 'var(--color-text-light)', cursor: 'pointer', fontWeight: isActive ? 'bold' : 'normal' }}>
+      {children}
+    </button>
   );
 }
 
 export default function BusinessProfileEditor({ session }) {
-  const [activeTab, setActiveTab] = a-useState('details');
+  const [activeTab, setActiveTab] = useState('details');
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [businessId, setBusinessId] = useState(null);
@@ -104,11 +107,18 @@ export default function BusinessProfileEditor({ session }) {
     <div>
       <h2>Your Business Profile</h2>
       <div className="tabs-container" style={{ borderBottom: '1px solid var(--color-border)', marginBottom: '1.5rem' }}>
-        <TabButton isActive={activeTab === 'details'} onClick={() => setActiveTab('details')}>Profile Details</TabButton>
+        {/* --- THIS IS THE CORRECTED JSX --- */}
+        <TabButton isActive={activeTab === 'details'} onClick={() => setActiveTab('details')}>
+            Profile Details
+        </TabButton>
         {businessId && (
           <>
-            <TabButton isActive={activeTab === 'gallery'} onClick={() => setActiveTab('gallery')}>Manage Gallery</TabButton>
-            <TabButton isActive={activeTab === 'settings'} onClick={() => setActiveTab('settings')}>Settings</TabButton>
+            <TabButton isActive={activeTab === 'gallery'} onClick={() => setActiveTab('gallery')}>
+                Manage Gallery
+            </TabButton>
+            <TabButton isActive={activeTab === 'settings'} onClick={() => setActiveTab('settings')}>
+                Settings
+            </TabButton>
           </>
         )}
       </div>
